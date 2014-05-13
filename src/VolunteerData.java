@@ -5,12 +5,12 @@ public class VolunteerData {
 	private String link = null;
 	private String address = "";
 	private String category = "";
-	private String title = "";
-	public VolunteerData (String link, String address, String category, String title) {
+	private String name = "";
+	public VolunteerData (String link, String address, String category, String name) {
 		this.link = link;
 		this.address = address;
 		this.category = category;
-		this.title = title;
+		this.name = name;
 	}
 	public String getLink() {
 		return link;
@@ -31,6 +31,10 @@ public class VolunteerData {
 		this.category = category;
 	}
 	
-	
+	public String toString() {
+		return "Information for: " + name +
+				"\nAddress: " + address +
+				"\n" + category;
+	}
 
 }
