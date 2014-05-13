@@ -1,5 +1,3 @@
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.*;
 
 public class VolunteerData {
 	private String link = null;

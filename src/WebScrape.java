@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.util.LinkedList;
 
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -101,9 +100,8 @@ public class WebScrape {
 		 *	args[1] = province
 		 *  args[2] = keyword 
 		 */
-		String province = "Northwest_Territories";
+		String province = "Yukon";
 		Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + ".html");
-		Document docForExtraction = null;
 		Elements pageElems = doc.select("b[CLASS$=navigb]");
 		String pages = "";
 		int totalPages=1;
