@@ -83,7 +83,7 @@ public class WebScrape {
 		address = address.substring(0, address.indexOf("<br />"));
 		return address;
 	}
-	
+
 	public static Elements filterDataElements(Elements dataElements){
 		Elements filter = new Elements();
 		for (Element dataElement : dataElements) {
@@ -95,36 +95,34 @@ public class WebScrape {
 	}
 
 	public static void main (String[] args) {
-		LinkedList<String> provinceData = new LinkedList<String>();
-		provinceData.add("Alberta");
-		provinceData.add("British_Columbia");
-		provinceData.add("Manitoba");
-		provinceData.add("New_Brunswick");
-		provinceData.add("Newfoundland");
-		provinceData.add("North_York");
-		provinceData.add("Northwest_Territories");
-		provinceData.add("Nova_Scotia");
-		provinceData.add("Nunavut");
-		provinceData.add("Ontario");
-		provinceData.add("Prince_Edward_Island");
-		provinceData.add("Quebec");
-		provinceData.add("Saskatchewan");
-		provinceData.add("Yukon");
-		for (String province : provinceData) {
-			Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + ".html");
-			Elements dataElements = getValidVolunteerData(doc);
-			Elements filteredDataElements = filterDataElements(dataElements);
-			try {
-				createDataObjects(filteredDataElements);
-			} catch (Exception e) {
-				e.getMessage() ;
-			}
-
-		}
+		/*
+		 *	args[0] = city
+		 *	args[1] = province
+		 *  args[2] = keyword 
+		 */
+		String province = "Alberta";
+		Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + ".html");
+		Elements pageElems = doc.select("b[CLASS$=navigb]");
+		String pages = pageElems.last().text().substring(1, pageElems.last().text().length() - 1);
+		int totalPages = Integer.parseInt(pages);
+	
 		
-		for (VolunteerData dataElement : volunteerData) {
-			System.out.println(dataElement.toString());
+		
+		/**
+		Elements dataElements = getValidVolunteerData(doc);
+		Elements filteredDataElements = filterDataElements(dataElements);
+		try {
+			createDataObjects(filteredDataElements);
+		} catch (Exception e) {
+			e.getMessage() ;
 		}
+
+
+
+		for (VolunteerData dataElement : volunteerData) {
+			System.out.println(dataElement.toString() + "\n");
+		}
+		*/
 	}
 
 }
