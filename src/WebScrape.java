@@ -1,11 +1,14 @@
 import java.io.IOException;
-
-import javax.naming.ldap.StartTlsRequest;
+import java.util.LinkedList;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.*;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 public class WebScrape {
+	
+	private static LinkedList<VolunteerData> volunteerData = new LinkedList<VolunteerData>();
+	
 	public WebScrape() {
 		
 	}
@@ -36,9 +39,26 @@ public class WebScrape {
 		return dataElements;
 	}
 	
-	public static void main (String[] args) {
-		Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/British_Columbia.html");
-		Elements dataElements = getValidVolunteerData(doc);
-		
+	public void createDataObjects (Elements dataElements) {
+		for (Element dataElement : dataElements) {
+			Document elementDoc = getDocumentFromUrl(dataElement.attr("abs:href"));
+		}
 	}
+	
+	public static String getElementAddress(Document doc) {
+		String address = "";
+		Elements addressElement = doc.getElementsByTag("td");
+		for (Element data : addressElement) {
+			System.out.println(data.toString());
+		}
+		return address;
+	}
+	
+	public static void main (String[] args) {
+		Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/Alberta.html");
+		Elements dataElements = getValidVolunteerData(doc);
+		Document addressDoc = getDocumentFromUrl(dataElements.first().attr("abs:href"));
+		String address = getElementAddress(addressDoc);
+	}
+
 }
