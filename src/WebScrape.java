@@ -87,7 +87,8 @@ public class WebScrape {
 	public static Elements filterDataElements(Elements dataElements){
 		Elements filter = new Elements();
 		for (Element dataElement : dataElements) {
-			if (!dataElement.attr("abs:href").equals("http://www.canadian-universities.net/Volunteer/Centre-daction-benevole-et-communautaire-Saint-Laurent.html")) {
+			if (!dataElement.attr("abs:href").equals("http://www.canadian-universities.net/Volunteer/Centre-daction-benevole-et-communautaire-Saint-Laurent.html") &&
+					!dataElement.attr("abs:href").equals("http://www.canadian-universities.net/Volunteer/The-Duke-of-Edinburghs-Award.html")) {
 				filter.add(dataElement);
 			}
 		}
@@ -100,29 +101,33 @@ public class WebScrape {
 		 *	args[1] = province
 		 *  args[2] = keyword 
 		 */
-		String province = "Alberta";
+		String province = "Northwest_Territories";
 		Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + ".html");
+		Document docForExtraction = null;
 		Elements pageElems = doc.select("b[CLASS$=navigb]");
-		String pages = pageElems.last().text().substring(1, pageElems.last().text().length() - 1);
-		int totalPages = Integer.parseInt(pages);
-	
-		
-		
-		/**
-		Elements dataElements = getValidVolunteerData(doc);
-		Elements filteredDataElements = filterDataElements(dataElements);
-		try {
-			createDataObjects(filteredDataElements);
-		} catch (Exception e) {
-			e.getMessage() ;
+		String pages = "";
+		int totalPages=1;
+		if (pageElems.size() > 0) {
+			pages = pageElems.last().text().substring(1, pageElems.last().text().length() - 1);
+			totalPages = Integer.parseInt(pages);
 		}
-
-
+		for (int i = 1; i <= totalPages; i++) {
+			if (i != 1) {
+				doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + i + ".html");
+			}
+			Elements dataElements = getValidVolunteerData(doc);
+			Elements filteredDataElements = filterDataElements(dataElements);
+			try {
+				createDataObjects(filteredDataElements);
+			} catch (Exception e) {
+				e.getMessage() ;
+			}
+		}
 
 		for (VolunteerData dataElement : volunteerData) {
 			System.out.println(dataElement.toString() + "\n");
 		}
-		*/
+		 
 	}
 
 }
