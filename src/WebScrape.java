@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 public class WebScrape {
 
 	private static LinkedList<VolunteerData> volunteerData = new LinkedList<VolunteerData>();
+	private static int dataCount = 0;
 
 	public WebScrape() {
 
@@ -44,6 +45,8 @@ public class WebScrape {
 			Document elementDoc = getDocumentFromUrl(dataElement.attr("abs:href"));
 			String docName = elementDoc.title().toString().substring(0, elementDoc.title().toString().indexOf(":"));
 			volunteerData.add(new VolunteerData(dataElement.attr("abs:href"), getElementAddress(elementDoc), getElementCategory(elementDoc), docName));
+			System.out.println(volunteerData.getLast().toString() + "\n");
+			dataCount ++;
 		}
 	}
 
@@ -86,7 +89,7 @@ public class WebScrape {
 	public static Elements filterDataElements(Elements dataElements){
 		Elements filter = new Elements();
 		for (Element dataElement : dataElements) {
-			if (!dataElement.attr("abs:href").equals("http://www.canadian-universities.net/Volunteer/Centre-daction-benevole-et-communautaire-Saint-Laurent.html") &&
+			if (!dataElement.attr("abs:href").equals("http://www.c`anadian-universities.net/Volunteer/Centre-daction-benevole-et-communautaire-Saint-Laurent.html") &&
 					!dataElement.attr("abs:href").equals("http://www.canadian-universities.net/Volunteer/The-Duke-of-Edinburghs-Award.html")) {
 				filter.add(dataElement);
 			}
@@ -100,32 +103,78 @@ public class WebScrape {
 		 *	args[1] = province
 		 *  args[2] = keyword 
 		 */
-		String province = "Yukon";
-		Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + ".html");
-		Elements pageElems = doc.select("b[CLASS$=navigb]");
-		String pages = "";
-		int totalPages=1;
-		if (pageElems.size() > 0) {
-			pages = pageElems.last().text().substring(1, pageElems.last().text().length() - 1);
-			totalPages = Integer.parseInt(pages);
-		}
-		for (int i = 1; i <= totalPages; i++) {
-			if (i != 1) {
-				doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + i + ".html");
-			}
-			Elements dataElements = getValidVolunteerData(doc);
-			Elements filteredDataElements = filterDataElements(dataElements);
-			try {
-				createDataObjects(filteredDataElements);
-			} catch (Exception e) {
-				e.getMessage() ;
-			}
-		}
+		LinkedList<String> provinceList = new LinkedList<String>();
+		LinkedList<VolunteerData> results = new LinkedList<VolunteerData>();
+		String city = "";
+		String keyword = "";
+		provinceList.add("Alberta");
+		provinceList.add("British_Columbia");
+		provinceList.add("Manitoba");
+		provinceList.add("New_Brunswick");
+		provinceList.add("Newfoundland");
+		provinceList.add("North_York");
+		provinceList.add("Northwest_Territories");
+		provinceList.add("Nova_Scotia");
+		provinceList.add("Nunavut");
+		provinceList.add("Ontario");
+		provinceList.add("Prince_Edward_Island");
+		provinceList.add("Quebec");
+		provinceList.add("Saskatchewan");
+		provinceList.add("Yukon");
 
-		for (VolunteerData dataElement : volunteerData) {
+		for (String province : provinceList) {
+			Document doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + ".html");
+			Elements pageElems = new Elements();
+			String pages = "";
+			try {
+				pageElems = doc.select("b[CLASS$=navigb]");
+			} catch (Exception e) {
+				System.out.println("");
+			}
+			int totalPages=1;
+			if (pageElems.size() > 0) {
+				pages = pageElems.last().text().substring(1, pageElems.last().text().length() - 1);
+				totalPages = Integer.parseInt(pages);
+			}
+			for (int i = 1; i <= totalPages; i++) {
+				if (i != 1) {
+					doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + i + ".html");
+				} else {
+					doc = getDocumentFromUrl("http://www.canadian-universities.net/Volunteer/" + province + ".html");
+				}
+				Elements dataElements = getValidVolunteerData(doc);
+				//Elements filteredDataElements = filterDataElements(dataElements);
+				Elements filteredDataElements = dataElements;
+				try {
+					createDataObjects(filteredDataElements);
+				} catch (Exception e) {
+					e.getMessage() ;
+				}
+			}
+			for (VolunteerData data : volunteerData) {
+				results.add(data);
+			}
+			if (!city.isEmpty()) {
+				for (VolunteerData dataElement : volunteerData) {
+					if (!dataElement.getAddress().contains(city)) {
+						results.remove(dataElement);
+					}
+				}
+			}
+
+			if (!keyword.isEmpty()) {
+				for (VolunteerData dataElement : volunteerData) {
+					if (!dataElement.getCategory().contains(keyword)) {
+						results.remove(dataElement);
+					}
+				}
+			}
+			/*for (VolunteerData dataElement : results) {
 			System.out.println(dataElement.toString() + "\n");
+		} */
 		}
-		 
+		System.out.println("The data count is: " + dataCount);
 	}
+
 
 }
